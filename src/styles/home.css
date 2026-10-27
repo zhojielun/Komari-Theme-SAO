@@ -1,0 +1,3895 @@
+/* 首页品牌铭牌：只保留站点名，绝对定位到 AppShell 已经存在的顶部留白里。 */
+.home-brand {
+  position: absolute;
+  top: -14px;
+  left: 0;
+  z-index: 30;
+  display: flex;
+  height: 36px;
+  max-width: min(38rem, calc(100vw - 10rem));
+  align-items: center;
+  pointer-events: none;
+  transition:
+    opacity 160ms ease,
+    transform 180ms ease,
+    visibility 160ms ease;
+}
+
+.home-brand-title {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  padding: 2px 20px 3px 0;
+  font-size: clamp(18px, 1.5vw, 21px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .home-brand {
+    max-width: calc(100vw - 8.5rem);
+  }
+
+  .home-brand-title {
+    font-size: 19px;
+  }
+
+}
+
+/* 中小屏的完整快捷栏会占用顶部大部分宽度。由 React 同步显式状态类，兼容
+   Chrome 87，并覆盖平板宽度；折叠后站点名立即恢复。PC 端（>= 1024px）保持常驻不撤出。 */
+@media (max-width: 1023px) {
+
+  .home-dashboard.is-controls-expanded .home-brand,
+  body.is-nav-controls-expanded .mao-nav-brand-left {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-20px);
+  }
+
+  .mao-nav-brand-left {
+    transition: opacity 200ms ease, visibility 200ms ease, transform 200ms ease;
+  }
+}
+
+/* 顶栏左侧标题与图标基础样式（桌面端保持稳定静态，杜绝初次渲染或断点计算引发的位移动画抖动） */
+.mao-nav-brand-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-overview {
+  /* 在线/离线配色,块状与柱状共用一处确保同步;比纯 status 色稍淡,贴合主题。 */
+  --overview-online: color-mix(in srgb, var(--status-success) 72%, transparent);
+  --overview-offline: color-mix(in srgb, var(--status-offline) 75%, transparent);
+}
+
+/* ==========================================================================
+   MAO 风格顶部导航 Bar 框架
+   ========================================================================== */
+.mao-top-nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: #f4f5f7;
+  padding-top: env(safe-area-inset-top, 0px);
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+:root[data-appearance="dark"] .mao-top-nav-bar {
+  background: #09090b;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.mao-nav-title {
+  font-size: 15px;
+  font-weight: 750;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   MAO Dashboard Hero 容器与指标设计体系
+   ========================================================================== */
+.mao-dashboard-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 22px;
+  background: var(--surface-elev, #eaecf0);
+  padding: clamp(14px, 2vw, 24px);
+  margin-bottom: 40px;
+  box-shadow: none;
+  position: relative;
+  z-index: 10;
+}
+
+:root[data-appearance="dark"] .mao-dashboard-hero {
+  background: #121214;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.6);
+}
+
+@media (min-width: 1180px) {
+  .mao-dashboard-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.48fr) minmax(0, 1fr);
+    gap: 22px;
+  }
+}
+
+.mao-hero-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mao-hero-header {
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mao-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 650;
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  width: fit-content;
+}
+
+:root[data-appearance="dark"] .mao-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.mao-hero-greeting {
+  margin: 0;
+  font-size: clamp(20px, 2vw, 25px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
+/* Exact 1:1 Dia Text Reveal Sweep & Aurora Flow from MAO_Theme */
+@keyframes dia-text-reveal-once {
+  0% {
+    background-position: 250% 0;
+  }
+
+  100% {
+    background-position: -150% 0;
+  }
+}
+
+@keyframes dia-sweep-fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+@keyframes aurora-fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes dia-text-reveal-sweep {
+  0% {
+    background-position: 250% 0;
+  }
+
+  65%,
+  100% {
+    background-position: -150% 0;
+  }
+}
+
+@keyframes aurora-text-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.dia-text-reveal-container {
+  display: inline-grid;
+  place-items: start;
+  width: max-content;
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translateZ(0);
+}
+
+.dia-sweep-layer,
+.aurora-text-layer {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  display: inline-block;
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translateZ(0);
+  will-change: opacity;
+}
+
+.dia-text-reveal-once {
+  background: var(--dia-gradient, linear-gradient(110deg, currentColor 0%, currentColor 25%, #c679c4 35%, #fa3d1d 42%, #ffb005 50%, #8b5cf6 58%, #0358f7 65%, currentColor 75%, currentColor 100%));
+  background-size: 250% 100%;
+  background-position: 250% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation:
+    dia-text-reveal-once var(--dia-duration, 2.5s) cubic-bezier(0.35, 0, 0.25, 1) var(--dia-delay, 0.2s) both,
+    dia-sweep-fade-out 0.8s ease-in-out calc(var(--dia-delay, 0.2s) + var(--dia-duration, 2.5s) - 0.7s) forwards;
+}
+
+.dia-text-reveal-repeat {
+  background: var(--dia-gradient, linear-gradient(110deg, currentColor 0%, currentColor 25%, #c679c4 35%, #fa3d1d 42%, #ffb005 50%, #8b5cf6 58%, #0358f7 65%, currentColor 75%, currentColor 100%));
+  background-size: 250% 100%;
+  background-position: 250% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: dia-text-reveal-sweep var(--dia-duration, 3.5s) cubic-bezier(0.35, 0, 0.25, 1) var(--dia-delay, 0s) infinite;
+}
+
+.aurora-text-layer-animated {
+  background-image: var(--aurora-gradient, linear-gradient(135deg, #c679c4 0%, #fa3d1d 25%, #ffb005 50%, #8b5cf6 75%, #0358f7 90%, #c679c4 100%));
+  background-size: 250% 250%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0;
+  animation:
+    aurora-fade-in 1.0s ease-in-out calc(var(--dia-delay, 0.2s) + var(--dia-duration, 2.5s) - 0.8s) 1 forwards,
+    aurora-text-flow var(--aurora-speed, 8s) ease-in-out infinite;
+}
+
+.aurora-text-layer-only {
+  background-image: var(--aurora-gradient, linear-gradient(135deg, #c679c4 0%, #fa3d1d 25%, #ffb005 50%, #8b5cf6 75%, #0358f7 90%, #c679c4 100%));
+  background-size: 250% 250%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: aurora-text-flow var(--aurora-speed, 8s) ease-in-out infinite;
+}
+
+.mao-hero-subtitle {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-tertiary);
+}
+
+/* 指标卡片网格：填充满左侧垂直高度并与右侧卡片底部严格齐平 */
+.mao-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  flex: 1;
+  width: 100%;
+}
+
+.mao-stat-grid[data-cards="4"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 768px) {
+  .mao-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .mao-stat-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+}
+
+.mao-stat-highlight {
+  color: var(--speed-high, #f97316);
+}
+
+.mao-stat-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  padding: 13px 15px;
+  min-height: 96px;
+  height: 100%;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+  transition: all 180ms ease;
+}
+
+:root[data-appearance="dark"] .mao-stat-card {
+  background: #1c1c1f;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.25);
+}
+
+.mao-stat-card:hover {
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 14px -3px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+:root[data-appearance="dark"] .mao-stat-card:hover {
+  background: #27272a;
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.45);
+}
+
+/* 续费提醒卡片有浮窗打开时提升 stacking context，覆盖相邻 hover 卡片 */
+.mao-stat-card.is-popover-open {
+  z-index: 80;
+  position: relative;
+}
+
+.mao-stat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.mao-stat-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+:root[data-appearance="dark"] .mao-stat-title-wrap {
+  gap: 7px;
+}
+
+/* 指标卡片图标容器：深浅模式分立特化 */
+.mao-stat-icon-hud {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--current-metric-color);
+  transition: all 180ms ease;
+}
+
+.mao-stat-icon-svg {
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+/* 7 种指标类型的色值绑定（标准化体系） */
+.mao-stat-icon-connections {
+  --current-metric-color: var(--metric-connections-color);
+}
+.mao-stat-icon-cpu {
+  --current-metric-color: var(--metric-cpu-color);
+}
+.mao-stat-icon-ram {
+  --current-metric-color: var(--metric-ram-color);
+}
+.mao-stat-icon-disk {
+  --current-metric-color: var(--metric-disk-color);
+}
+.mao-stat-icon-traffic {
+  --current-metric-color: var(--metric-traffic-color);
+}
+.mao-stat-icon-uptime {
+  --current-metric-color: var(--metric-uptime-color);
+}
+.mao-stat-icon-asset {
+  --current-metric-color: var(--metric-asset-color);
+}
+
+/* 浅色模式：保持无微底框状态 (纯矢量图标，颜色与深色模式保持 100% 同步对应) */
+:root:not([data-appearance="dark"]) .mao-stat-icon-hud {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  border-radius: 0;
+}
+
+/* 深色模式：启用 HUD 科技感微底框与发光阴影 */
+:root[data-appearance="dark"] .mao-stat-icon-hud {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 6px;
+  box-sizing: border-box;
+  background: color-mix(in srgb, var(--current-metric-color, var(--text-primary)) 12%, rgba(0, 0, 0, 0.45));
+  border: 1px solid color-mix(in srgb, var(--current-metric-color, var(--text-primary)) 24%, transparent);
+  box-shadow: 0 0 7px -1px color-mix(in srgb, var(--current-metric-color, var(--text-primary)) 25%, transparent);
+}
+
+/* 主题专属深色模式：机能高光与环境光晕 */
+:root[data-appearance="dark"] [data-palette="eva"] .mao-stat-icon-hud {
+  background: color-mix(in srgb, var(--current-metric-color, #7c3aed) 16%, rgba(12, 12, 16, 0.7));
+  border: 1px solid color-mix(in srgb, var(--current-metric-color, #7c3aed) 36%, transparent);
+  box-shadow: 0 0 9px color-mix(in srgb, var(--current-metric-color, #7c3aed) 32%, transparent),
+              inset 0 0 5px color-mix(in srgb, var(--current-metric-color, #7c3aed) 16%, transparent);
+}
+
+:root[data-appearance="dark"] [data-palette="cyberpunk"] .mao-stat-icon-hud {
+  background: color-mix(in srgb, var(--current-metric-color, #00f0ff) 18%, rgba(13, 13, 17, 0.75));
+  border: 1px solid color-mix(in srgb, var(--current-metric-color, #fcee0a) 40%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--current-metric-color, #00f0ff) 36%, transparent),
+              inset 0 0 6px color-mix(in srgb, var(--current-metric-color, #fcee0a) 18%, transparent);
+}
+
+:root[data-appearance="dark"] [data-palette="divergence"] .mao-stat-icon-hud {
+  background: color-mix(in srgb, var(--current-metric-color, #ff7700) 18%, rgba(22, 19, 17, 0.75));
+  border: 1px solid color-mix(in srgb, var(--current-metric-color, #ff7700) 38%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--current-metric-color, #ff7700) 35%, transparent),
+              inset 0 0 5px color-mix(in srgb, var(--current-metric-color, #facc15) 18%, transparent);
+}
+
+
+/* 深色模式下悬停微互动：HUD 微底框微妙提亮与微光扩散 */
+:root[data-appearance="dark"] .mao-stat-card:hover .mao-stat-icon-hud {
+  border-color: color-mix(in srgb, var(--current-metric-color, var(--text-primary)) 50%, transparent);
+  box-shadow: 0 0 11px color-mix(in srgb, var(--current-metric-color, var(--text-primary)) 45%, transparent);
+  transform: translateY(-0.5px) scale(1.04);
+}
+
+
+.mao-stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.mao-stat-action {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  opacity: 0.7;
+}
+
+.mao-stat-action:hover {
+  opacity: 1;
+}
+
+.mao-stat-value {
+  font-size: 16.5px;
+  font-weight: 760;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  margin: 7px 0 3px;
+}
+
+.mao-stat-slash-total {
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  margin-left: 2px;
+}
+
+.mao-stat-unit {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.mao-stat-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.mao-stat-caption {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 右侧进度与健康状态侧栏 */
+.mao-hero-side {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mao-progress-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  padding: clamp(14px, 1.8vw, 18px);
+  gap: 14px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+:root[data-appearance="dark"] .mao-progress-container {
+  background: #1c1c1f;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.25);
+}
+
+.mao-progress-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mao-progress-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mao-progress-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+  font-weight: 750;
+  margin: 0;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.mao-progress-subtitle {
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.mao-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 3.5px 9px;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mao-status-pill.is-healthy {
+  background: color-mix(in srgb, var(--status-success) 14%, transparent);
+  color: var(--status-success);
+  border: 1px solid color-mix(in srgb, var(--status-success) 30%, transparent);
+}
+
+.mao-status-pill.is-warning {
+  background: color-mix(in srgb, var(--status-warning) 14%, transparent);
+  color: var(--status-warning);
+  border: 1px solid color-mix(in srgb, var(--status-warning) 30%, transparent);
+}
+
+/* EVA 初号机：集群状态徽章专属配色（全健康=初号机荧光能量绿；存在离线=警告橙/暴走血红） */
+.mao-progress-container[data-palette="eva"] .mao-status-pill.is-healthy {
+  background: color-mix(in srgb, #059669 10%, transparent);
+  color: #059669;
+  border-color: color-mix(in srgb, #059669 35%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="eva"] .mao-status-pill.is-healthy {
+  color: #00ff66;
+  background: color-mix(in srgb, #00ff66 14%, transparent);
+  border-color: color-mix(in srgb, #00ff66 35%, transparent);
+}
+
+.mao-progress-container[data-palette="eva"] .mao-status-pill.is-warning {
+  background: color-mix(in srgb, #ea580c 10%, transparent);
+  color: #ea580c;
+  border-color: color-mix(in srgb, #ea580c 35%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="eva"] .mao-status-pill.is-warning {
+  color: #f97316;
+  background: color-mix(in srgb, #f97316 15%, transparent);
+  border-color: color-mix(in srgb, #f97316 35%, transparent);
+}
+
+/* 赛博朋克 2077：集群状态徽章（全健康=斯安威斯坦电光青；存在离线=夜之城警告亮黄） */
+.mao-progress-container[data-palette="cyberpunk"] .mao-status-pill.is-healthy {
+  background: color-mix(in srgb, #0891b2 10%, transparent);
+  color: #0891b2;
+  border-color: color-mix(in srgb, #0891b2 35%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="cyberpunk"] .mao-status-pill.is-healthy {
+  color: #00f0ff;
+  background: color-mix(in srgb, #00f0ff 14%, transparent);
+  border-color: color-mix(in srgb, #00f0ff 38%, transparent);
+}
+
+.mao-progress-container[data-palette="cyberpunk"] .mao-status-pill.is-warning {
+  background: color-mix(in srgb, #ca8a04 12%, transparent);
+  color: #ca8a04;
+  border-color: color-mix(in srgb, #ca8a04 35%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="cyberpunk"] .mao-status-pill.is-warning {
+  color: #fcee0a;
+  background: color-mix(in srgb, #fcee0a 15%, transparent);
+  border-color: color-mix(in srgb, #fcee0a 38%, transparent);
+}
+
+/* 命运石之门：集群状态徽章（全健康=纯正氖气暖橙；存在离线=世界线收敛警报红，彻底告别与 ACTIVE 撞金黄色） */
+.mao-progress-container[data-palette="divergence"] .mao-status-pill.is-healthy {
+  background: color-mix(in srgb, #ea580c 10%, transparent);
+  color: #ea580c;
+  border-color: color-mix(in srgb, #ea580c 35%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="divergence"] .mao-status-pill.is-healthy {
+  color: #ff7700;
+  background: color-mix(in srgb, #ff7700 15%, transparent);
+  border-color: color-mix(in srgb, #ff7700 38%, transparent);
+}
+
+.mao-progress-container[data-palette="divergence"] .mao-status-pill.is-warning {
+  background: color-mix(in srgb, #dc2626 12%, transparent);
+  color: #dc2626;
+  border-color: color-mix(in srgb, #dc2626 35%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="divergence"] .mao-status-pill.is-warning {
+  color: #ef4444;
+  background: color-mix(in srgb, #ef4444 15%, transparent);
+  border-color: color-mix(in srgb, #ef4444 38%, transparent);
+}
+
+
+.mao-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.mao-progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 11px 13px;
+}
+
+:root[data-appearance="dark"] .mao-progress-section {
+  background: #141416;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.mao-progress-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mao-progress-big-num {
+  font-size: 24px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.mao-progress-unit-label {
+  font-size: 11px;
+  font-weight: 550;
+  color: var(--text-tertiary);
+}
+
+.mao-progress-tag-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.mao-progress-tag-label {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  line-height: 1.2;
+}
+
+.mao-progress-tag-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+/* 一节一节的离散节点状态格（少于 51 个节点时呈现经典胶囊） */
+.mao-node-blocks {
+  display: flex;
+  align-items: center;
+  gap: clamp(1px, 0.4vw, 3px);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 3px 0;
+  min-height: 10px;
+}
+
+.mao-node-block {
+  flex: 1 1 0px;
+  min-width: 0;
+  height: 8px;
+  border-radius: 2px;
+  contain: paint layout;
+  transition: transform 140ms ease;
+}
+
+.mao-node-block.is-online {
+  background: var(--status-success);
+}
+
+.mao-node-block.is-offline {
+  background: var(--status-offline);
+}
+
+.mao-node-block.is-unknown {
+  background: color-mix(in srgb, var(--text-tertiary) 25%, transparent);
+}
+
+.mao-node-block:hover {
+  transform: scaleY(1.35);
+  opacity: 0.9;
+}
+
+/* 纯无缝一体化进度条（节点数 >= 51 时无缝切换） */
+.mao-seamless-progress {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: 8px;
+  margin: 3px 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  transition: transform 140ms ease;
+}
+
+:root[data-appearance="dark"] .mao-seamless-progress {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mao-seamless-progress:hover {
+  transform: scaleY(1.3);
+}
+
+.mao-seamless-segment {
+  height: 100%;
+  transition: width 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mao-seamless-segment.is-online {
+  background: var(--status-success);
+}
+
+.mao-seamless-segment.is-offline {
+  background: var(--status-offline);
+}
+
+.mao-progress-section-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-tertiary);
+}
+
+/* GitHub 风格集群全景热力矩阵 */
+.mao-matrix-section {
+  position: relative;
+  gap: 12px;
+  height: 100%;
+  min-height: 236px;
+  justify-content: space-between;
+}
+
+.mao-matrix-status-tags {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.mao-matrix-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+  font-size: 10.5px;
+  font-weight: 650;
+  padding: 1.5px 6px;
+  border-radius: 999px;
+  line-height: 1.2;
+}
+
+.mao-matrix-tag .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.mao-matrix-tag.is-online {
+  color: var(--status-success, #10b981);
+  background: color-mix(in srgb, var(--status-success, #10b981) 12%, transparent);
+}
+
+.mao-matrix-tag.is-high-load {
+  color: var(--status-warning, #f59e0b);
+  background: color-mix(in srgb, var(--status-warning, #f59e0b) 14%, transparent);
+}
+
+.mao-matrix-tag.is-offline {
+  color: var(--status-offline, #ef4444);
+  background: color-mix(in srgb, var(--status-offline, #ef4444) 14%, transparent);
+}
+
+.mao-heatmap-wrap {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+
+.mao-heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(20, minmax(0, 1fr));
+  gap: 3.5px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 8px;
+  /* 默认（<= 100 台标准 5 行矩阵）：自适应舒展，允许光晕自然羽化，杜绝硬边截断 */
+  overflow: visible;
+}
+
+/* 仅在超出 100 台（出现第 6 行及以上机位）时，才限制高度并开启平滑无痕垂直滚动 */
+.mao-heatmap-grid.is-scrollable {
+  max-height: 155px;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  overscroll-behavior: contain;
+}
+
+.mao-heatmap-grid.is-scrollable::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* 开屏动效期间取消滚动裁剪容器，确保文字与光束发散光晕完整舒展不被横线或边框截断；同时引入网格整体优雅淡入 */
+.mao-heatmap-grid.is-booting,
+.mao-heatmap-wrap.is-booting .mao-heatmap-grid {
+  overflow: visible !important;
+}
+
+.mao-heatmap-grid.is-booting {
+  animation: mao-grid-boot-fade 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes mao-grid-boot-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.mao-heatmap-cell {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  cursor: pointer;
+  outline: none !important;
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  background-clip: padding-box;
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, filter 120ms ease, opacity 120ms ease;
+}
+
+:root[data-appearance="dark"] .mao-heatmap-cell {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* 方案 A：外置独立外框 —— 悬空于方块外部（留有 1.3px 留白间隙），完全不侵入方块内部颜色，纯 opacity 渐变杜绝首帧纯色闪烁 */
+.mao-heatmap-cell::after {
+  content: "";
+  position: absolute;
+  inset: -2.5px;
+  border-radius: 4.5px;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 0 2.5px rgba(0, 0, 0, 0.16);
+  box-sizing: border-box;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+:root[data-appearance="dark"] .mao-heatmap-cell::after {
+  border-color: rgba(255, 255, 255, 0.38);
+  box-shadow: none;
+}
+
+.mao-heatmap-cell.is-low-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit) {
+  background: #34d399;
+}
+
+.mao-heatmap-cell.is-medium-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit) {
+  background: #10b981;
+}
+
+.mao-heatmap-cell.is-high-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit) {
+  background: #f59e0b;
+  box-shadow: 0 0 4px rgba(245, 158, 11, 0.35);
+}
+
+.mao-heatmap-cell.is-offline:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit) {
+  background: #ef4444;
+  box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+  animation: mao-pulse-offline 2s infinite ease-in-out;
+}
+
+/* EVA 初号机 (Unit-01) 方块矩阵专属主题配色：低载=初号机机体紫(#7c3aed) · 中载=荧光激活绿(#00ff66) · 高载=装甲警告橙(#f97316) · 离线=暴走血红(#ef4444) */
+.mao-matrix-section[data-palette="eva"] .mao-heatmap-cell.is-low-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit),
+.mao-matrix-section[data-palette="eva"] .mao-legend-box.is-low-load {
+  background: #7c3aed;
+}
+
+.mao-matrix-section[data-palette="eva"] .mao-heatmap-cell.is-medium-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit) {
+  background: #00ff66;
+  box-shadow: 0 0 5px rgba(0, 255, 102, 0.45);
+}
+
+.mao-matrix-section[data-palette="eva"] .mao-legend-box.is-medium-load {
+  background: #00ff66;
+}
+
+.mao-matrix-section[data-palette="eva"] .mao-heatmap-cell.is-high-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit) {
+  background: #f97316;
+  box-shadow: 0 0 4px rgba(249, 115, 22, 0.45);
+}
+
+.mao-matrix-section[data-palette="eva"] .mao-legend-box.is-high-load {
+  background: #f97316;
+}
+
+.mao-matrix-section[data-palette="eva"] .mao-heatmap-cell.is-offline:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit) {
+  background: #ef4444;
+  box-shadow: 0 0 5px rgba(239, 68, 68, 0.6);
+}
+
+/* 赛博朋克 2077：低载=电光青(#00f0ff) · 中载=霓虹亮黄(#fcee0a) · 高载=超频绯红(#ff0055) · 离线=赛博警报红(#ef4444) */
+.mao-matrix-section[data-palette="cyberpunk"] .mao-heatmap-cell.is-low-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit),
+.mao-matrix-section[data-palette="cyberpunk"] .mao-legend-box.is-low-load {
+  background: #00f0ff;
+  box-shadow: 0 0 4px rgba(0, 240, 255, 0.4);
+}
+
+.mao-matrix-section[data-palette="cyberpunk"] .mao-heatmap-cell.is-medium-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit),
+.mao-matrix-section[data-palette="cyberpunk"] .mao-legend-box.is-medium-load {
+  background: #fcee0a;
+  box-shadow: 0 0 5px rgba(252, 238, 10, 0.5);
+}
+
+.mao-matrix-section[data-palette="cyberpunk"] .mao-heatmap-cell.is-high-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit),
+.mao-matrix-section[data-palette="cyberpunk"] .mao-legend-box.is-high-load {
+  background: #ff0055;
+  box-shadow: 0 0 6px rgba(255, 0, 85, 0.6);
+}
+
+.mao-matrix-section[data-palette="cyberpunk"] .mao-heatmap-cell.is-offline:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit) {
+  background: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.7);
+}
+
+
+/* 命运石之门：低载=深邃休眠暗琥珀(#78350f) · 中载=高亮氖气放电暖橙(#ff7700，带强光晕) · 高载=电离白炽金黄(#facc15) · 离线=警报红(#ef4444) */
+.mao-matrix-section[data-palette="divergence"] .mao-heatmap-cell.is-low-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit),
+.mao-matrix-section[data-palette="divergence"] .mao-legend-box.is-low-load {
+  background: #6b2f0a !important;
+  border: 1px solid rgba(245, 158, 11, 0.28) !important;
+  box-shadow: none !important;
+  opacity: 0.85;
+}
+
+:root:not([data-appearance="dark"]) .mao-matrix-section[data-palette="divergence"] .mao-heatmap-cell.is-low-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit),
+:root:not([data-appearance="dark"]) .mao-matrix-section[data-palette="divergence"] .mao-legend-box.is-low-load {
+  background: #fdba74 !important;
+  border: 1px solid #fb923c !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+.mao-matrix-section[data-palette="divergence"] .mao-heatmap-cell.is-medium-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit),
+.mao-matrix-section[data-palette="divergence"] .mao-legend-box.is-medium-load {
+  background: #ff7700 !important;
+  border: 1px solid #ff9933 !important;
+  box-shadow: 0 0 8px rgba(255, 119, 0, 0.85) !important;
+  opacity: 1 !important;
+}
+
+:root:not([data-appearance="dark"]) .mao-matrix-section[data-palette="divergence"] .mao-heatmap-cell.is-medium-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit),
+:root:not([data-appearance="dark"]) .mao-matrix-section[data-palette="divergence"] .mao-legend-box.is-medium-load {
+  background: #f97316 !important;
+  border: 1px solid #ea580c !important;
+  box-shadow: 0 0 4px rgba(249, 115, 22, 0.4) !important;
+  opacity: 1 !important;
+}
+
+.mao-matrix-section[data-palette="divergence"] .mao-heatmap-cell.is-high-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit),
+.mao-matrix-section[data-palette="divergence"] .mao-legend-box.is-high-load {
+  background: #facc15 !important;
+  border: 1px solid #fef08a !important;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.95), 0 0 3px #fef08a !important;
+  opacity: 1 !important;
+}
+
+:root:not([data-appearance="dark"]) .mao-matrix-section[data-palette="divergence"] .mao-heatmap-cell.is-high-load:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit),
+:root:not([data-appearance="dark"]) .mao-matrix-section[data-palette="divergence"] .mao-legend-box.is-high-load {
+  background: #ea580c !important;
+  border: 1px solid #c2410c !important;
+  box-shadow: 0 0 5px rgba(234, 88, 12, 0.45) !important;
+  opacity: 1 !important;
+}
+
+.mao-matrix-section[data-palette="divergence"] .mao-heatmap-cell.is-offline:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit) {
+  background: #ef4444 !important;
+  border: 1px solid #f87171 !important;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.85) !important;
+  opacity: 1 !important;
+}
+
+:root:not([data-appearance="dark"]) .mao-matrix-section[data-palette="divergence"] .mao-heatmap-cell.is-offline:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit) {
+  background: #ef4444 !important;
+  border: 1px solid #dc2626 !important;
+  box-shadow: 0 0 4px rgba(239, 68, 68, 0.45) !important;
+  animation: mao-pulse-offline 2s infinite ease-in-out !important;
+  opacity: 1 !important;
+}
+
+
+.mao-heatmap-cell.is-unknown {
+  background: color-mix(in srgb, var(--text-tertiary) 20%, transparent);
+}
+
+.mao-heatmap-cell.is-empty-slot:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit) {
+  background: rgba(0, 0, 0, 0.035);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  cursor: default;
+  opacity: 0.65;
+}
+
+:root[data-appearance="dark"] .mao-heatmap-cell.is-empty-slot:not(.is-sao-pixel):not(.is-sao-beam):not(.is-sao-bg):not(.is-sao-unlit) {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ==========================================================================
+   开屏点阵动效与方格矩阵配色设计令牌（Palette Design Tokens）
+   面向未来可扩展架构：未来新增任何配色预设，仅需在此处声明一套 CSS 变量，
+   首页机架热力矩阵与设置页绘制画布将自动 100% 完整继承，
+   彻底杜绝散落选择器造成的权重竞争、深浅模式覆盖与空槽串色。
+   ========================================================================== */
+
+/* 1. 默认经典配色（SAO 暖金橙 + 6 维标准指标色）Tokens */
+:root,
+[data-palette="default"],
+.mao-matrix-section,
+.mao-pattern-canvas {
+  --matrix-boot-pixel-bg: #ff9600;
+  --matrix-boot-pixel-border: rgba(255, 220, 100, 0.9);
+  --matrix-boot-pixel-shadow: 0 0 9px rgba(255, 150, 0, 0.65), 0 0 2px rgba(255, 220, 100, 0.95);
+  --matrix-boot-beam-glow: #ff9600;
+  --matrix-boot-pulse-anim: sao-boot-pulse;
+
+  /* 动效专用典故色谱调度令牌 (默认经典 SAO：暖金橙 + 闪烁白炽金) */
+  --matrix-boot-fx-channel-a: #ff9600;
+  --matrix-boot-fx-channel-b: #ffd700;
+  --matrix-boot-fx-glow-a: rgba(255, 150, 0, 0.9);
+  --matrix-boot-fx-glow-b: rgba(255, 215, 0, 0.9);
+  --matrix-boot-fx-flux: #ff9600;
+  --matrix-boot-fx-flux-border: #ffd700;
+  --matrix-boot-fx-flux-glow: rgba(255, 150, 0, 0.95);
+
+  /* 指标卡片 6 维标准图标色（深浅模式保持同一套色值，避免撞色） */
+  --metric-connections-color: #10b981;
+  --metric-cpu-color: #f59e0b;
+  --metric-ram-color: #6366f1;
+  --metric-disk-color: #f97316;
+  --metric-traffic-color: #0284c7;
+  --metric-uptime-color: #06b6d4;
+  --metric-asset-color: #eab308;
+}
+
+/* 2. EVA 初号机配色（初号机紫 + 荧光绿 + 警告橙）Tokens */
+[data-palette="eva"],
+.mao-pattern-canvas[data-palette="eva"],
+.mao-pattern-canvas.is-eva {
+  --matrix-boot-pixel-bg: #7c3aed;
+  --matrix-boot-pixel-border: #c084fc;
+  --matrix-boot-pixel-shadow: 0 0 12px rgba(124, 58, 237, 0.85), 0 0 3px rgba(192, 132, 252, 0.95);
+  --matrix-boot-beam-glow: #7c3aed;
+  --matrix-boot-pulse-anim: sao-boot-pulse-eva;
+
+  /* 动效专用典故色谱 (EVA：初号机深紫 ✕ 暴走荧光绿，电涌紫) */
+  --matrix-boot-fx-channel-a: #7c3aed;
+  --matrix-boot-fx-channel-b: #00ff66;
+  --matrix-boot-fx-glow-a: rgba(124, 58, 237, 0.92);
+  --matrix-boot-fx-glow-b: rgba(0, 255, 102, 0.92);
+  --matrix-boot-fx-flux: #a855f7;
+  --matrix-boot-fx-flux-border: #d8b4fe;
+  --matrix-boot-fx-flux-glow: rgba(168, 85, 247, 0.95);
+
+  /* 指标卡片 EVA 初号机专属机能色系（默认 / 深色模式：高亮霓虹光感） */
+  --metric-connections-color: #00ff66;
+  --metric-cpu-color: #f97316;
+  --metric-ram-color: #3b82f6;
+  --metric-disk-color: #f43f5e;
+  --metric-traffic-color: #06b6d4;
+  --metric-uptime-color: #00e5ff;
+  --metric-asset-color: #f59e0b;
+}
+
+/* EVA 浅色模式特化：活跃连接换为沉稳护眼的高对比机能绿，内存用量换为初号机深紫，舒适且不刺眼 */
+:root:not([data-appearance="dark"]) [data-palette="eva"] {
+  --metric-connections-color: #16a34a;
+  --metric-ram-color: #2563eb;
+  --metric-uptime-color: #0891b2;
+}
+
+/* 3. 赛博朋克 2077 配色（斯安威斯坦电光青 + 霓虹亮黄 + 义体过载绯红）Tokens */
+[data-palette="cyberpunk"],
+.mao-pattern-canvas[data-palette="cyberpunk"] {
+  --matrix-boot-pixel-bg: #00f0ff;
+  --matrix-boot-pixel-border: #a5f3fc;
+  --matrix-boot-pixel-shadow: 0 0 12px rgba(0, 240, 255, 0.85), 0 0 3px rgba(165, 243, 252, 0.95);
+  --matrix-boot-beam-glow: #00f0ff;
+  --matrix-boot-pulse-anim: sao-boot-pulse-cyberpunk;
+
+  /* 动效专用典故色谱 (赛博朋克：斯安威斯坦青 ✕ 义眼品红，超载金黄) */
+  --matrix-boot-fx-channel-a: #00f0ff;
+  --matrix-boot-fx-channel-b: #ff007f;
+  --matrix-boot-fx-glow-a: rgba(0, 240, 255, 0.95);
+  --matrix-boot-fx-glow-b: rgba(255, 0, 127, 0.95);
+  --matrix-boot-fx-flux: #ff007f;
+  --matrix-boot-fx-flux-border: #f472b6;
+  --matrix-boot-fx-flux-glow: rgba(255, 0, 127, 0.95);
+
+  /* 指标卡片：电光青、霓虹黄、过载粉红、夜总会紫 */
+  --metric-connections-color: #00f0ff;
+  --metric-cpu-color: #fcee0a;
+  --metric-ram-color: #ff0055;
+  --metric-disk-color: #a855f7;
+  --metric-traffic-color: #00e5ff;
+  --metric-uptime-color: #facc15;
+  --metric-asset-color: #fbbf24;
+}
+
+:root:not([data-appearance="dark"]) [data-palette="cyberpunk"] {
+  --metric-connections-color: #0891b2;
+  --metric-cpu-color: #ca8a04;
+  --metric-ram-color: #e11d48;
+}
+
+
+/* 7. 命运石之门 · 辉光数码管配色（纯正真空管放电琥珀暖橙，彻底消灭孤立杂色）Tokens */
+[data-palette="divergence"],
+.mao-pattern-canvas[data-palette="divergence"] {
+  --matrix-boot-pixel-bg: #ff7700;
+  --matrix-boot-pixel-border: #fed7aa;
+  --matrix-boot-pixel-shadow: 0 0 12px rgba(255, 119, 0, 0.85), 0 0 3px rgba(254, 215, 170, 0.95);
+  --matrix-boot-beam-glow: #ff7700;
+  --matrix-boot-pulse-anim: sao-boot-pulse-divergence;
+
+  /* 动效专用典故色谱 (命运石之门：氖气暖橙 ✕ 电离白炽金，深邃赤橙电火花) */
+  --matrix-boot-fx-channel-a: #ff7700;
+  --matrix-boot-fx-channel-b: #facc15;
+  --matrix-boot-fx-glow-a: rgba(255, 119, 0, 0.92);
+  --matrix-boot-fx-glow-b: rgba(250, 204, 21, 0.92);
+  --matrix-boot-fx-flux: #ea580c;
+  --matrix-boot-fx-flux-border: #fdba74;
+  --matrix-boot-fx-flux-glow: rgba(234, 88, 12, 0.95);
+
+  /* 全部 6 个指标卡片统一为纯正通透的辉光管放电暖橙，消除 CPU/资产发黄的突兀感 */
+  --metric-connections-color: #ff7700;
+  --metric-cpu-color: #ff7700;
+  --metric-ram-color: #ff7700;
+  --metric-disk-color: #ff7700;
+  --metric-traffic-color: #ff7700;
+  --metric-uptime-color: #ff7700;
+  --metric-asset-color: #ff7700;
+}
+
+:root:not([data-appearance="dark"]) [data-palette="divergence"] {
+  --metric-connections-color: #ea580c;
+  --metric-cpu-color: #ea580c;
+  --metric-ram-color: #ea580c;
+  --metric-disk-color: #ea580c;
+  --metric-traffic-color: #ea580c;
+  --metric-uptime-color: #ea580c;
+  --metric-asset-color: #ea580c;
+}
+
+
+/* SAO 正体开屏点阵动效：统一重置所有槽位与节点的底色、边框、透明度与动画，杜绝深浅不一 */
+.mao-matrix-section .mao-heatmap-cell.is-sao-pixel,
+.mao-matrix-section .mao-heatmap-cell.is-sao-bg,
+.mao-matrix-section .mao-heatmap-cell.is-sao-unlit,
+.mao-matrix-section .mao-heatmap-cell.is-sao-beam,
+.mao-matrix-section .mao-heatmap-cell.is-cyber-glitch-channel-a,
+.mao-matrix-section .mao-heatmap-cell.is-cyber-glitch-channel-b,
+.mao-matrix-section .mao-heatmap-cell.is-cyber-glitch-cyan,
+.mao-matrix-section .mao-heatmap-cell.is-cyber-glitch-magenta,
+.mao-matrix-section .mao-heatmap-cell.is-flux-jumping,
+.mao-heatmap-cell.is-sao-pixel,
+.mao-heatmap-cell.is-sao-bg,
+.mao-heatmap-cell.is-sao-unlit,
+.mao-heatmap-cell.is-sao-beam,
+.mao-heatmap-cell.is-cyber-glitch-channel-a,
+.mao-heatmap-cell.is-cyber-glitch-channel-b,
+.mao-heatmap-cell.is-cyber-glitch-cyan,
+.mao-heatmap-cell.is-cyber-glitch-magenta,
+.mao-heatmap-cell.is-flux-jumping {
+  border-style: solid !important;
+  border-width: 1px !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+.mao-heatmap-cell.is-sao-pixel::after,
+.mao-heatmap-cell.is-sao-bg::after,
+.mao-heatmap-cell.is-sao-unlit::after,
+.mao-heatmap-cell.is-sao-beam::after,
+.mao-heatmap-cell.is-cyber-glitch-channel-a::after,
+.mao-heatmap-cell.is-cyber-glitch-channel-b::after,
+.mao-heatmap-cell.is-cyber-glitch-cyan::after,
+.mao-heatmap-cell.is-cyber-glitch-magenta::after,
+.mao-heatmap-cell.is-flux-jumping::after {
+  display: none !important;
+}
+
+/* 赛博朋克：行撕裂水平位移 */
+.mao-heatmap-cell.is-cyber-glitch-shift-left {
+  transform: translateX(-3.5px) !important;
+}
+.mao-heatmap-cell.is-cyber-glitch-shift-right {
+  transform: translateX(3.5px) !important;
+}
+
+/* 动效专用色谱调度：神经故障爆闪色散（双通道：主通道 Channel A ✕ 辅助对比通道 Channel B）
+   100% 由当前主题的典故色谱驱动，EVA下为紫绿，赛博朋克下为青粉，石头门下为橙金，SAO下为橙黄 */
+.mao-heatmap-cell.is-cyber-glitch-channel-a,
+.mao-pattern-cell.is-cyber-glitch-channel-a,
+.mao-heatmap-cell.is-cyber-glitch-cyan,
+.mao-pattern-cell.is-cyber-glitch-cyan {
+  background: var(--matrix-boot-fx-channel-a, #00f0ff) !important;
+  border-color: var(--matrix-boot-fx-channel-a, #38bdf8) !important;
+  box-shadow: 0 0 12px var(--matrix-boot-fx-glow-a, rgba(0, 240, 255, 0.95)), 0 0 3px var(--matrix-boot-fx-channel-a, #0284c7) !important;
+  opacity: 1 !important;
+  z-index: 5;
+}
+
+.mao-heatmap-cell.is-cyber-glitch-channel-b,
+.mao-pattern-cell.is-cyber-glitch-channel-b,
+.mao-heatmap-cell.is-cyber-glitch-magenta,
+.mao-pattern-cell.is-cyber-glitch-magenta {
+  background: var(--matrix-boot-fx-channel-b, #ff007f) !important;
+  border-color: var(--matrix-boot-fx-channel-b, #f43f5e) !important;
+  box-shadow: 0 0 12px var(--matrix-boot-fx-glow-b, rgba(255, 0, 127, 0.95)), 0 0 3px var(--matrix-boot-fx-channel-b, #e11d48) !important;
+  opacity: 1 !important;
+  z-index: 5;
+}
+
+/* 世界线变动率放电跳变态：与当前主题色谱完全一体化，纯粹高能放电，杜绝杂色边框与异色光晕 */
+.mao-heatmap-cell.is-flux-jumping,
+.mao-pattern-cell.is-flux-jumping {
+  --_flux-color: var(--matrix-boot-fx-flux, var(--matrix-boot-pixel-bg));
+  background: var(--_flux-color) !important;
+  border-color: var(--matrix-boot-fx-flux-border, color-mix(in srgb, var(--_flux-color) 75%, #ffffff)) !important;
+  box-shadow: 0 0 10px var(--matrix-boot-fx-flux-glow, color-mix(in srgb, var(--_flux-color) 75%, transparent)),
+              0 0 3px var(--matrix-boot-fx-flux-border, color-mix(in srgb, var(--_flux-color) 75%, #ffffff)) !important;
+  opacity: 0.95 !important;
+  z-index: 4;
+}
+
+:root[data-appearance="dark"] .mao-heatmap-cell.is-flux-jumping,
+:root[data-appearance="dark"] .mao-pattern-cell.is-flux-jumping {
+  --_flux-color: var(--matrix-boot-fx-flux, var(--matrix-boot-pixel-bg));
+  background: var(--_flux-color) !important;
+  border-color: var(--matrix-boot-fx-flux-border, color-mix(in srgb, var(--_flux-color) 85%, #ffffff)) !important;
+  box-shadow: 0 0 12px var(--matrix-boot-fx-flux-glow, color-mix(in srgb, var(--_flux-color) 85%, transparent)),
+              0 0 4px var(--matrix-boot-fx-flux-border, color-mix(in srgb, var(--_flux-color) 85%, #ffffff)) !important;
+  opacity: 1 !important;
+  z-index: 4;
+}
+
+/* 1. 光束横扫列：统一呈现当前主题的高能离子光束，杜绝白炽惨白与生硬色块 */
+.mao-matrix-section .mao-heatmap-cell.is-sao-beam,
+.mao-heatmap-cell.is-sao-beam {
+  background: var(--matrix-boot-pixel-bg) !important;
+  border-color: var(--matrix-boot-pixel-border) !important;
+  box-shadow: 0 0 12px var(--matrix-boot-beam-glow), 0 0 4px var(--matrix-boot-pixel-border) !important;
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  z-index: 5;
+}
+
+:root[data-appearance="dark"] .mao-matrix-section .mao-heatmap-cell.is-sao-beam,
+:root[data-appearance="dark"] .mao-heatmap-cell.is-sao-beam {
+  background: var(--matrix-boot-pixel-bg) !important;
+  border-color: var(--matrix-boot-pixel-border) !important;
+  box-shadow: 0 0 14px var(--matrix-boot-beam-glow), 0 0 4px var(--matrix-boot-pixel-border) !important;
+}
+
+/* 2. 开屏文字像素：统一由配色设计令牌（Tokens）驱动，杜绝写死颜色与层叠权重竞争 */
+.mao-matrix-section .mao-heatmap-cell.is-sao-pixel,
+.mao-heatmap-cell.is-sao-pixel {
+  background: var(--matrix-boot-pixel-bg) !important;
+  border: 1px solid var(--matrix-boot-pixel-border) !important;
+  box-shadow: var(--matrix-boot-pixel-shadow) !important;
+  opacity: 1 !important;
+  transition: none !important;
+  z-index: 2;
+}
+
+.mao-matrix-section .mao-heatmap-cell.is-sao-pixel.is-sao-glow,
+.mao-heatmap-cell.is-sao-pixel.is-sao-glow {
+  animation: var(--matrix-boot-pulse-anim) 0.6s ease-in-out infinite !important;
+  transition: none !important;
+  z-index: 3;
+}
+
+/* 4. 背景已扫过非文字像素：统统清除离线红光/高载黄光/虚线干扰，呈现干净统一的暗调底色，光束离开时有柔和余晖渐隐 */
+.mao-heatmap-cell.is-sao-bg {
+  background: rgba(0, 0, 0, 0.035) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: none !important;
+  opacity: 0.45 !important;
+  transition: background-color 0.2s ease-out, opacity 0.2s ease-out, box-shadow 0.2s ease-out !important;
+}
+
+:root[data-appearance="dark"] .mao-heatmap-cell.is-sao-bg {
+  background: rgba(255, 255, 255, 0.025) !important;
+  border-color: rgba(255, 255, 255, 0.035) !important;
+  opacity: 0.25 !important;
+  transition: background-color 0.2s ease-out, opacity 0.2s ease-out, box-shadow 0.2s ease-out !important;
+}
+
+
+/* 5. 未被光束扫到的区域：规整机架底板，具备清晰且克制的机位槽位轮廓，绝不产生白茫茫一片的空白感 */
+.mao-heatmap-cell.is-sao-unlit {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: none !important;
+  opacity: 0.55 !important;
+  transition: none !important;
+}
+
+:root[data-appearance="dark"] .mao-heatmap-cell.is-sao-unlit {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  opacity: 0.35 !important;
+  transition: none !important;
+}
+
+/* 6. 平滑溶解过渡 */
+.mao-heatmap-cell.is-sao-dissolve {
+  transition: all 350ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes sao-boot-pulse {
+  0%, 100% {
+    filter: brightness(1);
+    box-shadow: 0 0 6px rgba(255, 150, 0, 0.5);
+  }
+  50% {
+    filter: brightness(1.28);
+    box-shadow: 0 0 15px rgba(255, 165, 0, 0.95), 0 0 3px rgba(255, 240, 180, 0.95);
+  }
+}
+
+@keyframes sao-boot-pulse-eva {
+  0%, 100% {
+    filter: brightness(1);
+    box-shadow: 0 0 7px rgba(124, 58, 237, 0.65), 0 0 2px rgba(192, 132, 252, 0.7);
+  }
+  50% {
+    filter: brightness(1.25);
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.95), 0 0 4px #c084fc;
+  }
+}
+
+@keyframes sao-boot-pulse-cyberpunk {
+  0%, 100% {
+    filter: brightness(1);
+    box-shadow: 0 0 7px rgba(0, 240, 255, 0.65), 0 0 2px rgba(165, 243, 252, 0.7);
+  }
+  50% {
+    filter: brightness(1.3);
+    box-shadow: 0 0 17px rgba(0, 240, 255, 0.95), 0 0 4px #fcee0a;
+  }
+}
+
+
+
+@keyframes sao-boot-pulse-divergence {
+  0%, 100% {
+    filter: brightness(1);
+    box-shadow: 0 0 7px rgba(255, 119, 0, 0.65), 0 0 2px rgba(254, 215, 170, 0.7);
+  }
+  50% {
+    filter: brightness(1.3);
+    box-shadow: 0 0 17px rgba(255, 119, 0, 0.95), 0 0 4px #facc15;
+  }
+}
+
+
+/* 选中高亮状态：仅方块微亮并显现外置外框 */
+.mao-heatmap-cell:not(.is-empty-slot):hover,
+.mao-heatmap-cell:not(.is-empty-slot):focus-visible,
+.mao-heatmap-cell:not(.is-empty-slot).is-active {
+  filter: brightness(1.05);
+  z-index: 10;
+}
+
+.mao-heatmap-cell:not(.is-empty-slot):hover::after,
+.mao-heatmap-cell:not(.is-empty-slot):focus-visible::after,
+.mao-heatmap-cell:not(.is-empty-slot).is-active::after {
+  opacity: 1;
+}
+
+.mao-heatmap-cell.is-offline:hover {
+  animation-play-state: paused;
+}
+
+.mao-heatmap-cell.is-empty-slot:hover {
+  opacity: 0.95;
+}
+
+@keyframes mao-pulse-offline {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.65;
+    transform: scale(0.9);
+  }
+}
+
+.mao-heatmap-tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  z-index: 50;
+  pointer-events: none !important;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 6px 9px;
+  box-shadow: 0 10px 24px -4px rgba(0, 0, 0, 0.12), 0 3px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  width: max-content;
+  max-width: 230px;
+  animation: mao-tooltip-fade-top 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mao-heatmap-tooltip.is-bottom {
+  transform: translate(-50%, 0);
+  animation: mao-tooltip-fade-bottom 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-appearance="dark"] .mao-heatmap-tooltip {
+  background: rgba(24, 24, 27, 0.94);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.45), 0 4px 8px -2px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes mao-tooltip-fade-top {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -94%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -100%);
+  }
+}
+
+@keyframes mao-tooltip-fade-bottom {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -6%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.mao-tooltip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 4px;
+}
+
+:root[data-appearance="dark"] .mao-tooltip-header {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.mao-tooltip-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+:root[data-appearance="dark"] .mao-tooltip-name {
+  color: #f1f5f9;
+}
+
+.mao-tooltip-status {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 4.5px;
+  border-radius: 4px;
+  line-height: 1.2;
+}
+
+.mao-tooltip-status.is-idle,
+.mao-tooltip-status.is-healthy {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+:root[data-appearance="dark"] .mao-tooltip-status.is-idle,
+:root[data-appearance="dark"] .mao-tooltip-status.is-healthy {
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+}
+
+.mao-tooltip-status.is-active {
+  background: rgba(16, 185, 129, 0.22);
+  color: #047857;
+}
+
+:root[data-appearance="dark"] .mao-tooltip-status.is-active {
+  background: rgba(5, 223, 114, 0.22);
+  color: #00ff66;
+}
+
+/* EVA 初号机：空闲待机使用初号机紫色微标，活跃传输使用荧光绿徽标，高吞吐使用警戒橙徽标 */
+.mao-matrix-section[data-palette="eva"] .mao-tooltip-status.is-idle {
+  background: rgba(124, 58, 237, 0.16);
+  color: #7c3aed;
+}
+
+:root[data-appearance="dark"] .mao-matrix-section[data-palette="eva"] .mao-tooltip-status.is-idle {
+  background: rgba(124, 58, 237, 0.25);
+  color: #c4b5fd;
+}
+
+.mao-matrix-section[data-palette="eva"] .mao-tooltip-status.is-active {
+  background: rgba(0, 255, 102, 0.16);
+  color: #059669;
+}
+
+:root[data-appearance="dark"] .mao-matrix-section[data-palette="eva"] .mao-tooltip-status.is-active {
+  background: rgba(0, 255, 102, 0.25);
+  color: #00ff66;
+}
+
+.mao-tooltip-status.is-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+}
+
+:root[data-appearance="dark"] .mao-tooltip-status.is-warning {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+}
+
+.mao-matrix-section[data-palette="eva"] .mao-tooltip-status.is-warning {
+  background: rgba(249, 115, 22, 0.18);
+  color: #ea580c;
+}
+
+:root[data-appearance="dark"] .mao-matrix-section[data-palette="eva"] .mao-tooltip-status.is-warning {
+  background: rgba(249, 115, 22, 0.25);
+  color: #f97316;
+}
+
+
+
+.mao-tooltip-status.is-offline {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+
+:root[data-appearance="dark"] .mao-tooltip-status.is-offline {
+  background: rgba(239, 68, 68, 0.25);
+  color: #f87171;
+}
+
+.mao-tooltip-status.is-unknown {
+  background: rgba(148, 163, 184, 0.15);
+  color: #64748b;
+}
+
+:root[data-appearance="dark"] .mao-tooltip-status.is-unknown {
+  background: rgba(148, 163, 184, 0.2);
+  color: #cbd5e1;
+}
+
+.mao-tooltip-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5px;
+}
+
+.mao-tooltip-stat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 10px;
+}
+
+.mao-tooltip-stat-item .label {
+  color: var(--text-tertiary);
+}
+
+:root[data-appearance="dark"] .mao-tooltip-stat-item .label {
+  color: #94a3b8;
+}
+
+.mao-tooltip-stat-item .val {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+:root[data-appearance="dark"] .mao-tooltip-stat-item .val {
+  color: #f8fafc;
+}
+
+.mao-tooltip-offline-hint {
+  font-size: 10px;
+  color: #dc2626;
+  line-height: 1.3;
+}
+
+:root[data-appearance="dark"] .mao-tooltip-offline-hint {
+  color: #fca5a5;
+}
+
+.mao-tooltip-tip {
+  margin-top: 4px;
+  padding-top: 3px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.08);
+  font-size: 9px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+:root[data-appearance="dark"] .mao-tooltip-tip {
+  border-top-color: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+.mao-tooltip-empty-content {
+  color: var(--text-primary);
+}
+
+:root[data-appearance="dark"] .mao-tooltip-empty-content {
+  color: #f1f5f9;
+}
+
+.mao-legend-colors {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.mao-legend-text {
+  font-size: 9.5px;
+  color: var(--text-tertiary);
+  margin: 0 1px;
+}
+
+.mao-legend-box {
+  width: 7.5px;
+  height: 7.5px;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+:root[data-appearance="dark"] .mao-legend-box {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.mao-legend-box.is-low-load {
+  background: #34d399;
+}
+
+.mao-legend-box.is-medium-load {
+  background: #10b981;
+}
+
+.mao-legend-box.is-high-load {
+  background: #f59e0b;
+}
+
+.server-card.is-highlight-target,
+.compact-node-card.is-highlight-target,
+.node-list-row.is-highlight-target {
+  animation: mao-target-ring 2s ease-out;
+}
+
+@keyframes mao-target-ring {
+  0% {
+    box-shadow: 0 0 0 3px var(--theme-accent, #3b82f6), 0 0 16px rgba(59, 130, 246, 0.45);
+  }
+
+  100% {
+    box-shadow: none;
+  }
+}
+
+/* 实时网络动态曲线图分栏网格与卡片 */
+.mao-realtime-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+@container (max-width: 520px) {
+  .mao-realtime-charts-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mao-realtime-charts-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.mao-realtime-chart-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 8px 10px 4px;
+  min-width: 0;
+}
+
+.mao-network-section {
+  container-type: inline-size;
+  gap: 10px;
+}
+
+.mao-network-section .mao-realtime-chart-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+}
+
+:root[data-appearance="dark"] .mao-network-section .mao-realtime-chart-card {
+  background: rgba(255, 255, 255, 0.035);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+}
+
+/* 集群状态矩阵容器与切换动效 */
+.mao-cluster-body-wrap {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.mao-cluster-pane {
+  width: 100%;
+  height: 100%;
+  min-height: 236px;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes mao-pane-fade {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:root[data-appearance="dark"] .mao-realtime-chart-card {
+  background: #141416;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.mao-realtime-chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+}
+
+.mao-realtime-chart-title {
+  display: flex;
+  align-items: center;
+  gap: 4.5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.mao-realtime-chart-rates {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.mao-realtime-chart-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 88px;
+  overflow: visible;
+  touch-action: pan-y;
+  cursor: crosshair;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.mao-realtime-chart-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 实时图表节点悬浮详情卡片 */
+.mao-chart-tooltip {
+  position: absolute;
+  top: -2px;
+  transform: translateX(-50%);
+  z-index: 20;
+  pointer-events: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  min-width: 110px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.12), 0 2px 5px rgba(0, 0, 0, 0.06);
+  color: var(--text-primary);
+  font-size: 10.5px;
+  line-height: 1.35;
+  transition: opacity 0.12s ease-out;
+  animation: mao-tooltip-pop 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mao-tooltip-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -4px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+:root[data-appearance="dark"] .mao-chart-tooltip {
+  background: rgba(24, 24, 28, 0.96);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.mao-chart-tooltip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding-bottom: 2px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid rgba(125, 125, 125, 0.15);
+  font-size: 10px;
+}
+
+.mao-chart-tooltip-time {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.mao-chart-tooltip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+.mao-chart-tooltip-label {
+  display: flex;
+  align-items: center;
+  gap: 3.5px;
+  color: var(--text-secondary);
+}
+
+.mao-chart-tooltip-label i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.mao-chart-tooltip-val {
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 服务器集群大卡片容器（与上方监控总览卡片风格统一） */
+.mao-cluster-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 22px;
+  background: var(--surface-elev, #eaecf0);
+  padding: clamp(16px, 2vw, 24px);
+  margin-bottom: 8px;
+  box-shadow: none;
+  position: relative;
+  z-index: 1;
+  gap: 16px;
+}
+
+:root[data-appearance="dark"] .mao-cluster-card {
+  background: #121214;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.6);
+}
+
+/* 下层服务器集群板块标题（顶部徽章与右侧操作按钮并排） */
+.mao-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 0 4px;
+  width: 100%;
+}
+
+.mao-section-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.mao-section-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mao-section-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mao-section-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.mao-section-sub {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.overview-card {
+  --metric-accent: var(--text-tertiary);
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 112px;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 100% at 0% 0%,
+      color-mix(in srgb, var(--metric-accent) 6%, transparent) 0%,
+      transparent 52%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface-elev-a) 96%, white 4%) 0%,
+      var(--surface-a) 100%);
+  padding: 14px 16px;
+}
+
+.overview-card[data-metric="online"] {
+  --metric-accent: var(--status-success);
+}
+
+.overview-card[data-metric="traffic"] {
+  --metric-accent: var(--traffic-up);
+}
+
+.overview-card[data-metric="bandwidth"] {
+  --metric-accent: var(--speed-high);
+}
+
+.overview-card[data-metric="uptime"] {
+  --metric-accent: var(--status-success);
+}
+
+.overview-card[data-metric="asset"] {
+  --metric-accent: var(--accent-500);
+}
+
+/* 暗色依靠表面色阶建立层级，不叠白色顶光或指标色氛围。 */
+:root[data-appearance="dark"] .overview-card {
+  background: var(--surface-a);
+}
+
+.overview-card-head {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.overview-card-label {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.overview-card-action {
+  display: grid;
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  box-shadow: none;
+  opacity: 0.82;
+  transition:
+    color 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.overview-card-action:hover {
+  background: transparent;
+  color: var(--text-primary);
+  opacity: 1;
+}
+
+.overview-card-action:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text-secondary) 54%, transparent);
+  outline-offset: 2px;
+}
+
+.overview-card-action:active {
+  transform: scale(0.94);
+}
+
+/* 续费提醒复用资产入口，不另占首页内容流。平时只露一个轻量角标，弹层覆盖展开，
+   因此不会把概览、筛选或节点卡向下推。 */
+.renewal-reminder {
+  position: relative;
+  z-index: 90;
+  flex: 0 0 auto;
+}
+
+.renewal-reminder-trigger {
+  position: relative;
+}
+
+.renewal-reminder-dot {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 7px;
+  height: 7px;
+  border: 2px solid var(--surface-elev);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--status-error) 72%, white 28%);
+  box-sizing: content-box;
+  animation: renewal-reminder-breathe 2.4s ease-in-out infinite;
+}
+
+.renewal-reminder-dot::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 1px solid color-mix(in srgb, var(--status-error) 56%, transparent);
+  border-radius: inherit;
+  opacity: 0;
+  transform: scale(0.72);
+  animation: renewal-reminder-ring 2.4s ease-out infinite;
+}
+
+@keyframes renewal-reminder-breathe {
+
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes renewal-reminder-ring {
+
+  0%,
+  24% {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+
+  46% {
+    opacity: 0.42;
+  }
+
+  76%,
+  100% {
+    opacity: 0;
+    transform: scale(1.24);
+  }
+}
+
+.renewal-reminder-panel,
+.shadcn-hover-card {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 120;
+  width: min(360px, calc(100vw - 32px));
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  background: rgba(244, 245, 247, 0.96);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow:
+    0 16px 40px -12px rgba(15, 23, 42, 0.15),
+    0 4px 12px -4px rgba(15, 23, 42, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
+  color: var(--text-primary);
+  transform-origin: top right;
+  animation: shadcn-hover-card-in 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.renewal-reminder-panel.is-align-left {
+  right: auto;
+  left: 0;
+  transform-origin: top left;
+}
+
+.renewal-reminder-panel.is-align-right {
+  left: auto;
+  right: 0;
+  transform-origin: top right;
+}
+
+:root[data-appearance="dark"] .renewal-reminder-panel,
+:root[data-appearance="dark"] .shadcn-hover-card {
+  background: rgba(20, 20, 23, 0.94);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 20px 48px -12px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+@keyframes shadcn-hover-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.renewal-reminder-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 16px 12px;
+}
+
+.renewal-reminder-title-line {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.renewal-reminder-title-line h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 760;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.renewal-reminder-count {
+  display: inline-flex;
+  min-width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--status-warning) 16%, transparent);
+  color: color-mix(in srgb, var(--status-warning) 84%, var(--text-primary));
+  padding: 0 6px;
+  font-size: 11px;
+  font-weight: 760;
+  font-variant-numeric: tabular-nums;
+}
+
+.renewal-reminder-head p {
+  margin: 5px 0 0;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.renewal-reminder-close {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-tertiary);
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.renewal-reminder-close:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-primary);
+}
+
+:root[data-appearance="dark"] .renewal-reminder-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.renewal-reminder-list {
+  display: flex;
+  max-height: 280px;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding: 0 14px 14px;
+}
+
+.renewal-reminder-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 11px 13px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+}
+
+:root[data-appearance="dark"] .renewal-reminder-row {
+  background: #161618;
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+}
+
+.renewal-reminder-row-main {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 12px;
+  row-gap: 5px;
+}
+
+.renewal-reminder-row-main strong {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 720;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.renewal-reminder-row-main span {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 560;
+  line-height: 1.2;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.renewal-reminder-status {
+  flex: 0 0 auto;
+  border-radius: 7px;
+  padding: 5px 7px;
+  font-size: 10px;
+  font-weight: 720;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.renewal-reminder-status[data-tone="critical"] {
+  background: color-mix(in srgb, var(--status-error) 12%, transparent);
+  color: var(--status-error);
+}
+
+.renewal-reminder-status[data-tone="warning"] {
+  background: color-mix(in srgb, var(--status-warning) 14%, transparent);
+  color: color-mix(in srgb, var(--status-warning) 82%, var(--text-primary));
+}
+
+.renewal-reminder-status[data-tone="success"] {
+  background: color-mix(in srgb, var(--status-success) 12%, transparent);
+  color: var(--status-success);
+}
+
+.renewal-reminder-more {
+  margin: 1px 2px 0;
+  color: var(--text-tertiary);
+  font-size: 11px;
+}
+
+.renewal-reminder-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.02);
+  padding: 10px 14px 12px;
+}
+
+:root[data-appearance="dark"] .renewal-reminder-actions {
+  border-top-color: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.renewal-reminder-actions a,
+.renewal-reminder-actions>button {
+  min-height: 30px;
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.renewal-reminder-detail {
+  display: inline-flex;
+  margin-right: auto;
+  align-items: center;
+  color: var(--accent-500);
+}
+
+.renewal-reminder-detail:hover {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.renewal-reminder-btn-group {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 9px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+:root[data-appearance="dark"] .renewal-reminder-btn-group {
+  background: #1c1c1f;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+.renewal-reminder-later,
+.renewal-reminder-dismiss {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 11px;
+  min-height: 30px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-primary);
+  transition: background 140ms ease, color 140ms ease;
+}
+
+/* 两按钮之间的竖向分隔线 */
+.renewal-reminder-later::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+:root[data-appearance="dark"] .renewal-reminder-later::after {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.renewal-reminder-later:hover {
+  background: rgba(0, 0, 0, 0.045);
+}
+
+:root[data-appearance="dark"] .renewal-reminder-later:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.renewal-reminder-dismiss {
+  color: var(--text-secondary);
+}
+
+.renewal-reminder-dismiss:hover {
+  background: rgba(0, 0, 0, 0.045);
+  color: var(--text-primary);
+}
+
+:root[data-appearance="dark"] .renewal-reminder-dismiss:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+@media (max-width: 520px) {
+  .renewal-reminder-panel {
+    position: fixed;
+    top: auto;
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    width: auto;
+    max-height: min(72vh, 620px);
+    border-radius: 18px;
+  }
+
+  .renewal-reminder-actions {
+    flex-wrap: wrap;
+  }
+
+  .renewal-reminder-detail {
+    flex: 1 0 100%;
+    justify-content: center;
+    margin-right: 0;
+  }
+
+  .renewal-reminder-later,
+  .renewal-reminder-dismiss {
+    flex: 1 1 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .renewal-reminder-dot,
+  .renewal-reminder-dot::after {
+    animation: none;
+  }
+
+  .renewal-reminder-dot {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.overview-card-main {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.overview-card-value {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--text-primary);
+  font-size: 28px;
+  font-weight: 760;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.overview-card-unit {
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* 在线数量是首卡的辅助状态，略小于流量、带宽等核心指标。 */
+.overview-card[data-metric="online"] .overview-card-value {
+  font-size: 24px;
+}
+
+.overview-card[data-metric="online"] .overview-card-unit {
+  font-size: 12px;
+}
+
+.overview-card-sub {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 560;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.overview-card-sub-compact {
+  display: none;
+}
+
+.overview-card-footer {
+  display: flex;
+  min-width: 0;
+  margin-top: auto;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* 底部小字说明(如资产卡的「实时汇率计算」)。 */
+.overview-card-caption {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.overview-card-rating {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 48%;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 720;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.overview-card-rating[data-rating-level="0"] {
+  color: color-mix(in srgb, var(--status-success) 72%, var(--text-secondary));
+}
+
+.overview-card-rating[data-rating-level="1"] {
+  color: var(--accent-500);
+}
+
+.overview-card-rating[data-rating-level="2"] {
+  color: var(--progress-memory);
+}
+
+.overview-card-rating[data-rating-level="3"] {
+  color: color-mix(in srgb, #f5b84b 82%, var(--text-primary));
+}
+
+/* 带宽评级徽章变体：格式与集群状态 .mao-status-pill 保持一致 */
+.overview-card-rating.is-bandwidth-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 76px;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 3.5px 9px 3.5px 20px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  max-width: none;
+  border: 1px solid color-mix(in srgb, var(--badge-color, currentColor) 30%, transparent);
+  background: color-mix(in srgb, var(--badge-color, currentColor) 14%, transparent);
+  color: var(--badge-color, currentColor);
+  flex-shrink: 0;
+  transition: color 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.overview-card-rating.is-bandwidth-badge[data-rating-level="0"] {
+  --badge-color: #2f9e65;
+  --badge-glow: rgba(47, 158, 101, 0.4);
+  color: var(--badge-color);
+}
+
+.overview-card-rating.is-bandwidth-badge[data-rating-level="1"] {
+  --badge-color: var(--accent-500);
+  --badge-glow: color-mix(in srgb, var(--accent-500) 40%, transparent);
+  color: var(--badge-color);
+}
+
+.overview-card-rating.is-bandwidth-badge[data-rating-level="2"] {
+  --badge-color: #f59e0b;
+  --badge-glow: rgba(245, 158, 11, 0.45);
+  color: var(--badge-color);
+}
+
+.overview-card-rating.is-bandwidth-badge[data-rating-level="3"] {
+  --badge-color: #f43f5e;
+  --badge-glow: rgba(244, 63, 94, 0.5);
+  color: var(--badge-color);
+}
+
+/* EVA 初号机：带宽评级徽章专属配色（机体紫 -> 荧光绿 -> 警告橙 -> 暴走血红） */
+.mao-progress-container[data-palette="eva"] .overview-card-rating.is-bandwidth-badge[data-rating-level="0"] {
+  --badge-color: #7c3aed;
+  --badge-glow: rgba(124, 58, 237, 0.45);
+  color: #7c3aed;
+  border-color: color-mix(in srgb, #7c3aed 35%, transparent);
+  background: color-mix(in srgb, #7c3aed 10%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="eva"] .overview-card-rating.is-bandwidth-badge[data-rating-level="0"] {
+  --badge-color: #a78bfa;
+  --badge-glow: rgba(167, 139, 250, 0.65);
+  color: #c4b5fd;
+  border-color: color-mix(in srgb, #a78bfa 35%, transparent);
+  background: color-mix(in srgb, #7c3aed 18%, transparent);
+}
+
+.mao-progress-container[data-palette="eva"] .overview-card-rating.is-bandwidth-badge[data-rating-level="1"] {
+  --badge-color: #059669;
+  --badge-glow: rgba(5, 150, 105, 0.45);
+  color: #059669;
+  border-color: color-mix(in srgb, #059669 35%, transparent);
+  background: color-mix(in srgb, #059669 10%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="eva"] .overview-card-rating.is-bandwidth-badge[data-rating-level="1"] {
+  --badge-color: #00ff66;
+  --badge-glow: rgba(0, 255, 102, 0.65);
+  color: #00ff66;
+  border-color: color-mix(in srgb, #00ff66 35%, transparent);
+  background: color-mix(in srgb, #00ff66 14%, transparent);
+}
+
+.mao-progress-container[data-palette="eva"] .overview-card-rating.is-bandwidth-badge[data-rating-level="2"] {
+  --badge-color: #ea580c;
+  --badge-glow: rgba(234, 88, 12, 0.45);
+  color: #ea580c;
+  border-color: color-mix(in srgb, #ea580c 35%, transparent);
+  background: color-mix(in srgb, #ea580c 10%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="eva"] .overview-card-rating.is-bandwidth-badge[data-rating-level="2"] {
+  --badge-color: #f97316;
+  --badge-glow: rgba(249, 115, 22, 0.65);
+  color: #f97316;
+  border-color: color-mix(in srgb, #f97316 35%, transparent);
+  background: color-mix(in srgb, #f97316 15%, transparent);
+}
+
+.mao-progress-container[data-palette="eva"] .overview-card-rating.is-bandwidth-badge[data-rating-level="3"] {
+  --badge-color: #dc2626;
+  --badge-glow: rgba(220, 38, 38, 0.45);
+  color: #dc2626;
+  border-color: color-mix(in srgb, #dc2626 35%, transparent);
+  background: color-mix(in srgb, #dc2626 10%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="eva"] .overview-card-rating.is-bandwidth-badge[data-rating-level="3"] {
+  --badge-color: #ef4444;
+  --badge-glow: rgba(239, 68, 68, 0.7);
+  color: #ef4444;
+  border-color: color-mix(in srgb, #ef4444 40%, transparent);
+  background: color-mix(in srgb, #ef4444 16%, transparent);
+}
+
+.mao-progress-container[data-palette="eva"] .overview-card-rating.is-bandwidth-badge[data-rating-level="0"] .mao-status-dot {
+  animation-name: bandwidth-pulse-eva-0;
+}
+
+.mao-progress-container[data-palette="eva"] .overview-card-rating.is-bandwidth-badge[data-rating-level="1"] .mao-status-dot {
+  animation-name: bandwidth-pulse-eva-1;
+}
+
+.mao-progress-container[data-palette="eva"] .overview-card-rating.is-bandwidth-badge[data-rating-level="2"] .mao-status-dot {
+  animation-name: bandwidth-pulse-eva-2;
+}
+
+.mao-progress-container[data-palette="eva"] .overview-card-rating.is-bandwidth-badge[data-rating-level="3"] .mao-status-dot {
+  animation-name: bandwidth-pulse-eva-3;
+}
+
+/* 赛博朋克 2077：带宽评级徽章专属配色（斯安威斯坦冷青 -> 霓虹亮黄 -> 义眼超频品红 -> 义体过载绯红） */
+.mao-progress-container[data-palette="cyberpunk"] .overview-card-rating.is-bandwidth-badge[data-rating-level="0"] {
+  --badge-color: #0891b2;
+  --badge-glow: rgba(8, 145, 178, 0.45);
+  color: #0891b2;
+  border-color: color-mix(in srgb, #0891b2 35%, transparent);
+  background: color-mix(in srgb, #0891b2 10%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="cyberpunk"] .overview-card-rating.is-bandwidth-badge[data-rating-level="0"] {
+  --badge-color: #00f0ff;
+  --badge-glow: rgba(0, 240, 255, 0.7);
+  color: #67e8f9;
+  border-color: color-mix(in srgb, #00f0ff 40%, transparent);
+  background: color-mix(in srgb, #00f0ff 16%, transparent);
+}
+
+.mao-progress-container[data-palette="cyberpunk"] .overview-card-rating.is-bandwidth-badge[data-rating-level="1"] {
+  --badge-color: #ca8a04;
+  --badge-glow: rgba(202, 138, 4, 0.45);
+  color: #ca8a04;
+  border-color: color-mix(in srgb, #ca8a04 35%, transparent);
+  background: color-mix(in srgb, #ca8a04 10%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="cyberpunk"] .overview-card-rating.is-bandwidth-badge[data-rating-level="1"] {
+  --badge-color: #fcee0a;
+  --badge-glow: rgba(252, 238, 10, 0.7);
+  color: #fcee0a;
+  border-color: color-mix(in srgb, #fcee0a 40%, transparent);
+  background: color-mix(in srgb, #fcee0a 16%, transparent);
+}
+
+.mao-progress-container[data-palette="cyberpunk"] .overview-card-rating.is-bandwidth-badge[data-rating-level="2"] {
+  --badge-color: #e11d48;
+  --badge-glow: rgba(225, 29, 72, 0.45);
+  color: #e11d48;
+  border-color: color-mix(in srgb, #e11d48 35%, transparent);
+  background: color-mix(in srgb, #e11d48 10%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="cyberpunk"] .overview-card-rating.is-bandwidth-badge[data-rating-level="2"] {
+  --badge-color: #ff007f;
+  --badge-glow: rgba(255, 0, 127, 0.75);
+  color: #ff007f;
+  border-color: color-mix(in srgb, #ff007f 40%, transparent);
+  background: color-mix(in srgb, #ff007f 16%, transparent);
+}
+
+.mao-progress-container[data-palette="cyberpunk"] .overview-card-rating.is-bandwidth-badge[data-rating-level="3"] {
+  --badge-color: #be123c;
+  --badge-glow: rgba(190, 18, 60, 0.45);
+  color: #be123c;
+  border-color: color-mix(in srgb, #be123c 35%, transparent);
+  background: color-mix(in srgb, #be123c 10%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="cyberpunk"] .overview-card-rating.is-bandwidth-badge[data-rating-level="3"] {
+  --badge-color: #ff0055;
+  --badge-glow: rgba(255, 0, 85, 0.8);
+  color: #ff0055;
+  border-color: color-mix(in srgb, #ff0055 42%, transparent);
+  background: color-mix(in srgb, #ff0055 18%, transparent);
+}
+
+.mao-progress-container[data-palette="cyberpunk"] .overview-card-rating.is-bandwidth-badge[data-rating-level="0"] .mao-status-dot {
+  animation-name: bandwidth-pulse-cp-0;
+}
+
+.mao-progress-container[data-palette="cyberpunk"] .overview-card-rating.is-bandwidth-badge[data-rating-level="1"] .mao-status-dot {
+  animation-name: bandwidth-pulse-cp-1;
+}
+
+.mao-progress-container[data-palette="cyberpunk"] .overview-card-rating.is-bandwidth-badge[data-rating-level="2"] .mao-status-dot {
+  animation-name: bandwidth-pulse-cp-2;
+}
+
+.mao-progress-container[data-palette="cyberpunk"] .overview-card-rating.is-bandwidth-badge[data-rating-level="3"] .mao-status-dot {
+  animation-name: bandwidth-pulse-cp-3;
+}
+
+/* 命运石之门：带宽评级徽章专属配色（冷阴极休眠灰 -> 初级辉光琥珀 -> 高能炽热电离金 -> 超频赤红） */
+.mao-progress-container[data-palette="divergence"] .overview-card-rating.is-bandwidth-badge[data-rating-level="0"] {
+  --badge-color: #78716c;
+  --badge-glow: rgba(120, 113, 108, 0.35);
+  color: #78716c;
+  border-color: color-mix(in srgb, #78716c 30%, transparent);
+  background: color-mix(in srgb, #78716c 10%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="divergence"] .overview-card-rating.is-bandwidth-badge[data-rating-level="0"] {
+  --badge-color: #a8a29e;
+  --badge-glow: rgba(168, 162, 158, 0.45);
+  color: #d6d3d1;
+  border-color: color-mix(in srgb, #a8a29e 35%, transparent);
+  background: color-mix(in srgb, #a8a29e 14%, transparent);
+}
+
+.mao-progress-container[data-palette="divergence"] .overview-card-rating.is-bandwidth-badge[data-rating-level="1"] {
+  --badge-color: #c2410c;
+  --badge-glow: rgba(194, 65, 12, 0.45);
+  color: #c2410c;
+  border-color: color-mix(in srgb, #c2410c 35%, transparent);
+  background: color-mix(in srgb, #c2410c 10%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="divergence"] .overview-card-rating.is-bandwidth-badge[data-rating-level="1"] {
+  --badge-color: #f97316;
+  --badge-glow: rgba(249, 115, 22, 0.65);
+  color: #fb923c;
+  border-color: color-mix(in srgb, #f97316 40%, transparent);
+  background: color-mix(in srgb, #f97316 16%, transparent);
+}
+
+.mao-progress-container[data-palette="divergence"] .overview-card-rating.is-bandwidth-badge[data-rating-level="2"] {
+  --badge-color: #ca8a04;
+  --badge-glow: rgba(202, 138, 4, 0.45);
+  color: #ca8a04;
+  border-color: color-mix(in srgb, #ca8a04 35%, transparent);
+  background: color-mix(in srgb, #ca8a04 10%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="divergence"] .overview-card-rating.is-bandwidth-badge[data-rating-level="2"] {
+  --badge-color: #facc15;
+  --badge-glow: rgba(250, 204, 21, 0.7);
+  color: #facc15;
+  border-color: color-mix(in srgb, #facc15 40%, transparent);
+  background: color-mix(in srgb, #facc15 16%, transparent);
+}
+
+.mao-progress-container[data-palette="divergence"] .overview-card-rating.is-bandwidth-badge[data-rating-level="3"] {
+  --badge-color: #be123c;
+  --badge-glow: rgba(190, 18, 60, 0.45);
+  color: #be123c;
+  border-color: color-mix(in srgb, #be123c 35%, transparent);
+  background: color-mix(in srgb, #be123c 10%, transparent);
+}
+
+:root[data-appearance="dark"] .mao-progress-container[data-palette="divergence"] .overview-card-rating.is-bandwidth-badge[data-rating-level="3"] {
+  --badge-color: #f43f5e;
+  --badge-glow: rgba(244, 63, 94, 0.75);
+  color: #f43f5e;
+  border-color: color-mix(in srgb, #f43f5e 42%, transparent);
+  background: color-mix(in srgb, #f43f5e 18%, transparent);
+}
+
+.mao-progress-container[data-palette="divergence"] .overview-card-rating.is-bandwidth-badge[data-rating-level="0"] .mao-status-dot {
+  animation-name: bandwidth-pulse-div-0;
+}
+
+.mao-progress-container[data-palette="divergence"] .overview-card-rating.is-bandwidth-badge[data-rating-level="1"] .mao-status-dot {
+  animation-name: bandwidth-pulse-div-1;
+}
+
+.mao-progress-container[data-palette="divergence"] .overview-card-rating.is-bandwidth-badge[data-rating-level="2"] .mao-status-dot {
+  animation-name: bandwidth-pulse-div-2;
+}
+
+.mao-progress-container[data-palette="divergence"] .overview-card-rating.is-bandwidth-badge[data-rating-level="3"] .mao-status-dot {
+  animation-name: bandwidth-pulse-div-3;
+}
+
+/* 指示圆点呼吸闪烁效果：位置绝对钉死在左侧 9px 槽位，杜绝跟随评级文字长短发生水平位移与缩进抖动 */
+.overview-card-rating.is-bandwidth-badge .mao-status-dot {
+  position: absolute;
+  left: 9px;
+  top: calc(50% - 3px);
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  flex-shrink: 0;
+  will-change: opacity, box-shadow;
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.overview-card-rating.is-bandwidth-badge[data-rating-level="0"] .mao-status-dot {
+  animation-name: bandwidth-pulse-0;
+  animation-duration: 3.2s;
+  /* 闲置：舒缓低频呼吸 */
+}
+
+.overview-card-rating.is-bandwidth-badge[data-rating-level="1"] .mao-status-dot {
+  animation-name: bandwidth-pulse-1;
+  animation-duration: 2.0s;
+  /* 轻载：标准节奏 */
+}
+
+.overview-card-rating.is-bandwidth-badge[data-rating-level="2"] .mao-status-dot {
+  animation-name: bandwidth-pulse-2;
+  animation-duration: 1.1s;
+  /* 活跃：高频跳动 */
+}
+
+.overview-card-rating.is-bandwidth-badge[data-rating-level="3"] .mao-status-dot {
+  animation-name: bandwidth-pulse-3;
+  animation-duration: 0.55s;
+  /* 爆发：极速警示脉冲 */
+}
+
+/* 等级 0：正常/闲置 翠绿光晕 */
+@keyframes bandwidth-pulse-0 {
+
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(47, 158, 101, 0.6);
+  }
+
+  50% {
+    opacity: 0.28;
+    box-shadow: 0 0 5px 1.5px rgba(47, 158, 101, 0.35);
+  }
+}
+
+/* 等级 1：轻载 主题蓝/青光晕 */
+@keyframes bandwidth-pulse-1 {
+
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-500) 60%, transparent);
+  }
+
+  50% {
+    opacity: 0.28;
+    box-shadow: 0 0 5px 1.5px color-mix(in srgb, var(--accent-500) 35%, transparent);
+  }
+}
+
+/* 等级 2：活跃 橙黄暖色光晕 (绝不串色为绿) */
+@keyframes bandwidth-pulse-2 {
+
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6);
+  }
+
+  50% {
+    opacity: 0.28;
+    box-shadow: 0 0 5px 1.5px rgba(245, 158, 11, 0.4);
+  }
+}
+
+/* 等级 3：SURGE 爆发 玫红/警示粉红光晕 (绝不串色为绿) */
+@keyframes bandwidth-pulse-3 {
+
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.65);
+  }
+
+  50% {
+    opacity: 0.28;
+    box-shadow: 0 0 5px 1.5px rgba(244, 63, 94, 0.45);
+  }
+}
+
+/* EVA 初号机：带宽指示灯专属同步脉冲 */
+@keyframes bandwidth-pulse-eva-0 {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--badge-glow, rgba(124, 58, 237, 0.45)); }
+  50% { opacity: 0.35; box-shadow: 0 0 5px 1.5px var(--badge-glow, rgba(124, 58, 237, 0.45)); }
+}
+
+@keyframes bandwidth-pulse-eva-1 {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--badge-glow, rgba(5, 150, 105, 0.45)); }
+  50% { opacity: 0.35; box-shadow: 0 0 5px 1.5px var(--badge-glow, rgba(5, 150, 105, 0.45)); }
+}
+
+@keyframes bandwidth-pulse-eva-2 {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--badge-glow, rgba(234, 88, 12, 0.45)); }
+  50% { opacity: 0.35; box-shadow: 0 0 5px 1.5px var(--badge-glow, rgba(234, 88, 12, 0.45)); }
+}
+
+@keyframes bandwidth-pulse-eva-3 {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--badge-glow, rgba(220, 38, 38, 0.45)); }
+  50% { opacity: 0.35; box-shadow: 0 0 6px 2px var(--badge-glow, rgba(220, 38, 38, 0.45)); }
+}
+
+/* 赛博朋克 2077：带宽指示灯专属同步脉冲 */
+@keyframes bandwidth-pulse-cp-0 {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--badge-glow, rgba(0, 240, 255, 0.5)); }
+  50% { opacity: 0.35; box-shadow: 0 0 5px 1.5px var(--badge-glow, rgba(0, 240, 255, 0.5)); }
+}
+@keyframes bandwidth-pulse-cp-1 {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--badge-glow, rgba(252, 238, 10, 0.5)); }
+  50% { opacity: 0.35; box-shadow: 0 0 5px 1.5px var(--badge-glow, rgba(252, 238, 10, 0.5)); }
+}
+@keyframes bandwidth-pulse-cp-2 {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--badge-glow, rgba(255, 0, 127, 0.55)); }
+  50% { opacity: 0.35; box-shadow: 0 0 5px 1.5px var(--badge-glow, rgba(255, 0, 127, 0.55)); }
+}
+@keyframes bandwidth-pulse-cp-3 {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--badge-glow, rgba(255, 0, 85, 0.6)); }
+  50% { opacity: 0.35; box-shadow: 0 0 6px 2px var(--badge-glow, rgba(255, 0, 85, 0.6)); }
+}
+
+/* 命运石之门：带宽指示灯专属同步脉冲 */
+@keyframes bandwidth-pulse-div-0 {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--badge-glow, rgba(168, 162, 158, 0.45)); }
+  50% { opacity: 0.35; box-shadow: 0 0 5px 1.5px var(--badge-glow, rgba(168, 162, 158, 0.45)); }
+}
+@keyframes bandwidth-pulse-div-1 {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--badge-glow, rgba(255, 119, 0, 0.5)); }
+  50% { opacity: 0.35; box-shadow: 0 0 5px 1.5px var(--badge-glow, rgba(255, 119, 0, 0.5)); }
+}
+@keyframes bandwidth-pulse-div-2 {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--badge-glow, rgba(250, 204, 21, 0.5)); }
+  50% { opacity: 0.35; box-shadow: 0 0 5px 1.5px var(--badge-glow, rgba(250, 204, 21, 0.5)); }
+}
+@keyframes bandwidth-pulse-div-3 {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--badge-glow, rgba(244, 63, 94, 0.6)); }
+  50% { opacity: 0.35; box-shadow: 0 0 6px 2px var(--badge-glow, rgba(244, 63, 94, 0.6)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overview-card-rating.is-bandwidth-badge .mao-status-dot {
+    animation: none;
+  }
+}
+
+/* 在线条:左绿=在线、右红=离线,中间中性轨道=未知。初始用中性而非红色,避免指标
+   到达前首帧闪红;随后绿/红从两端同时长入。准确的「12 / 14」就在其上方,所以这条
+   只作快速一瞥用。 */
+.overview-bar {
+  display: flex;
+  justify-content: space-between;
+  height: 6px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--progress-bg);
+}
+
+.overview-bar-online,
+.overview-bar-offline {
+  height: 100%;
+  transition: width 320ms ease;
+}
+
+.overview-bar-online {
+  background: var(--overview-online);
+}
+
+.overview-bar-offline {
+  background: var(--overview-offline);
+}
+
+/* 块状版(节点数 5–10):每台一格,规格与主题分段格(MetricBar 的 canvas 分段)
+   一致——10px 高、2px 间隙、2px 圆角、内阴影,读作有厚度的格子而非切条。颜色与
+   .overview-bar-online/offline 同源,保持同步;默认格为中性底色,只有真离线才变红,避免条状那种「首帧闪红」。 */
+.overview-blocks {
+  display: flex;
+  gap: 2px;
+  height: 10px;
+  width: 100%;
+}
+
+.overview-block {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--progress-bg);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.18);
+  transition: background 320ms ease;
+}
+
+.overview-block.is-online {
+  background: var(--overview-online);
+}
+
+.overview-block.is-offline {
+  background: var(--overview-offline);
+}
+
+.home-group-tabs {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 3px;
+  overflow-x: auto;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+:root[data-appearance="dark"] .home-group-tabs {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.home-group-tabs button {
+  display: inline-flex;
+  flex: 1 0 auto;
+  min-height: 28px;
+  max-width: 240px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: none;
+  border-radius: 9px;
+  color: var(--text-secondary);
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: transparent;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.home-group-tabs button:hover {
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+:root[data-appearance="dark"] .home-group-tabs button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+.home-group-tabs button[data-active="true"] {
+  background: #f3f4f6;
+  color: var(--text-primary);
+  font-weight: 750;
+  box-shadow: none;
+}
+
+:root[data-appearance="dark"] .home-group-tabs button[data-active="true"] {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 680px) {
+  .overview-card {
+    min-height: 100px;
+    border-radius: 14px;
+    padding: 12px 13px;
+    gap: 8px;
+  }
+
+  .overview-card-value {
+    font-size: 24px;
+  }
+
+  .overview-card[data-metric="online"] .overview-card-value {
+    font-size: 21px;
+  }
+
+  .overview-card[data-metric="online"] .overview-card-unit {
+    font-size: 11px;
+  }
+
+  .overview-card-footer {
+    gap: 6px;
+  }
+
+  .overview-card-sub {
+    font-size: 11px;
+    font-weight: 620;
+  }
+
+  .overview-card-sub-full {
+    display: none;
+  }
+
+  .overview-card-sub-compact {
+    display: inline;
+  }
+
+  .overview-card-rating {
+    flex: 0 0 auto;
+    max-width: 5.5em;
+    font-size: 11px;
+  }
+
+  .overview-card-caption {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 560px) {
+  .home-group-tabs {
+    width: 100%;
+    border-radius: 14px;
+  }
+
+  .home-group-tabs button {
+    min-height: 30px;
+    max-width: 200px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+}
+
+/* 地区筛选栏：流式胶囊标签组，去除多余内层厚重大框 */
+.home-region-bar {
+  margin-bottom: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.home-region-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.home-region-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: all 160ms ease;
+}
+
+:root[data-appearance="dark"] .home-region-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.home-region-chip:hover {
+  color: var(--text-primary);
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.14);
+}
+
+:root[data-appearance="dark"] .home-region-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: var(--text-primary);
+}
+
+.home-region-chip[data-active="true"] {
+  background: color-mix(in srgb, var(--accent-500) 14%, #ffffff);
+  color: var(--accent-500, #3b82f6);
+  border-color: color-mix(in srgb, var(--accent-500) 45%, transparent);
+  box-shadow: 0 0 10px -2px color-mix(in srgb, var(--accent-500) 25%, transparent);
+  font-weight: 700;
+}
+
+:root[data-appearance="dark"] .home-region-chip[data-active="true"] {
+  background: color-mix(in srgb, var(--accent-500) 22%, rgba(255, 255, 255, 0.06));
+  color: color-mix(in srgb, var(--accent-500) 90%, white);
+  border-color: color-mix(in srgb, var(--accent-500) 50%, transparent);
+  box-shadow: 0 0 12px -2px color-mix(in srgb, var(--accent-500) 35%, transparent);
+}
+
+.home-region-chip-code {
+  letter-spacing: 0.02em;
+}
+
+/* 数量角标:圆角小胶囊 */
+.home-region-chip-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-tertiary);
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition: all 160ms ease;
+}
+
+:root[data-appearance="dark"] .home-region-chip-count {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.home-region-chip[data-active="true"] .home-region-chip-count {
+  background: color-mix(in srgb, var(--accent-500) 25%, transparent);
+  color: var(--accent-500);
+}
+
+:root[data-appearance="dark"] .home-region-chip[data-active="true"] .home-region-chip-count {
+  background: color-mix(in srgb, var(--accent-500) 30%, transparent);
+  color: color-mix(in srgb, var(--accent-500) 95%, white);
+}
+
+@media (max-width: 560px) {
+  .home-region-chip {
+    min-height: 26px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+}
+
+/* 首页顶部为 36px 快捷设置按钮保留最小 48px 控制区：上下各约 6px。
+   iOS PWA 的状态栏安全区由 app-main 统一叠加。 */
+.home-dashboard {
+  padding-top: 0px;
+}
+
+/* 首页控件条复用卡片网格列定义：分组标签落在第一列，排序控件钉在最后一列。 */
+.home-controls-bar {
+  align-items: center;
+}
+
+.home-sort {
+  position: relative;
+}
+
+.home-controls-bar .home-sort {
+  grid-column: -2 / -1;
+  justify-self: end;
+  align-self: center;
+}
+
+.home-sort-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: all 160ms ease;
+}
+
+:root[data-appearance="dark"] .home-sort-trigger {
+  background: color-mix(in srgb, var(--surface) 60%, var(--surface-elev) 40%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.home-sort-trigger:hover,
+.home-sort-trigger[aria-expanded="true"] {
+  background: #ffffff;
+  color: var(--text-primary);
+  border-color: rgba(0, 0, 0, 0.14);
+}
+
+:root[data-appearance="dark"] .home-sort-trigger:hover,
+:root[data-appearance="dark"] .home-sort-trigger[aria-expanded="true"] {
+  background: var(--surface-elev);
+  color: var(--text-primary);
+  border-color: color-mix(in srgb, var(--border-strong) 60%, transparent);
+}
+
+/* panel/item 骨架及 hover/激活态与实例切换器共享,见 surface.css 的弹出菜单组选择器;
+   这里只保留排序浮层的差异项。 */
+.home-sort-panel {
+  right: 0;
+  min-width: 180px;
+  /* 移动端不超出视口 */
+  max-width: min(260px, calc(100vw - 32px));
+}
+
+.home-sort-item {
+  gap: 8px;
+}
+
+.home-sort-item-label {
+  flex: 1 1 auto;
+}
+
+.home-sort-item svg {
+  display: block;
+  flex: none;
+}
+
+.home-sort-item[data-active="true"] svg {
+  color: var(--accent-500);
+}
+
+/* 移动端让分组与排序并排；分组可横向滚动，排序保持在右侧。 */
+@media (max-width: 768px) {
+  .home-controls-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .home-controls-bar .home-group-tabs {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+  }
+
+  .home-controls-bar .home-sort {
+    grid-column: auto;
+    align-self: auto;
+    flex: 0 0 auto;
+    margin-inline-start: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-brand {
+    top: -18px;
+  }
+
+  .home-dashboard {
+    padding-top: 0px;
+  }
+}
+
+/* 迷你档最多 5 列，但任何断点都不允许卡片窄于 260px；断点按页面实际 gutter
+   和列间距反推，避免 1280px 左右被固定列数压到 216px。 */
+.node-grid-mini {
+  grid-template-columns: repeat(5, minmax(var(--mini-card-min-width, 260px), 1fr));
+}
+
+@media (max-width: 1440px) {
+  .node-grid-mini {
+    grid-template-columns: repeat(4, minmax(var(--mini-card-min-width, 260px), 1fr));
+  }
+}
+
+@media (max-width: 1150px) {
+  .node-grid-mini {
+    grid-template-columns: repeat(3, minmax(var(--mini-card-min-width, 260px), 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .node-grid-mini {
+    grid-template-columns: repeat(2, minmax(var(--mini-card-min-width, 260px), 1fr));
+  }
+}
+
+@media (max-width: 580px) {
+  .node-grid-mini {
+    grid-template-columns: minmax(min(100%, var(--mini-card-min-width, 260px)), 1fr);
+  }
+}
+
+/* 迷你与列表档总览卡使用密集变体。 */
+.home-overview.is-dense {
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.home-overview.is-dense .overview-card {
+  min-height: 0;
+  gap: 6px;
+  border-radius: 12px;
+  padding: 10px 13px;
+}
+
+.home-overview.is-dense .overview-card-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+.home-overview.is-dense .overview-card-value {
+  font-size: 21px;
+}
+
+.home-overview.is-dense .overview-card-unit {
+  font-size: 11px;
+}
+
+.home-overview.is-dense .overview-card[data-metric="online"] .overview-card-value {
+  font-size: 19px;
+}
+
+.home-overview.is-dense .overview-card[data-metric="online"] .overview-card-unit {
+  font-size: 10px;
+}
+
+.home-overview.is-dense .overview-card-action {
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+}
+
+@media (max-width: 480px) {
+  .mao-hero-header {
+    gap: 12px;
+  }
+
+  .mao-section-header {
+    gap: 12px;
+  }
+
+  .mao-hero-subtitle,
+  .mao-section-sub,
+  .mao-progress-subtitle {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* 开屏点阵图案交互绘制器 */
+.mao-pattern-editor {
+  margin-top: 10px;
+  padding: 11px 13px;
+  background: var(--bg-card);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+}
+
+:root[data-appearance="dark"] .mao-pattern-editor {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.mao-pattern-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--hairline);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 120ms ease;
+  user-select: none;
+}
+
+.mao-pattern-action-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: var(--theme-accent, #3b82f6);
+  background: color-mix(in srgb, var(--theme-accent, #3b82f6) 8%, transparent);
+}
+
+.mao-pattern-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mao-pattern-action-btn.is-play {
+  color: var(--theme-accent, #3b82f6);
+  border-color: color-mix(in srgb, var(--theme-accent, #3b82f6) 30%, transparent);
+  background: color-mix(in srgb, var(--theme-accent, #3b82f6) 10%, transparent);
+}
+
+.mao-pattern-action-btn.is-play:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--theme-accent, #3b82f6) 20%, transparent);
+}
+
+/* 核心应用到首页操作按钮：严格遵循高对比度与零抖动 */
+.mao-pattern-action-btn.is-apply {
+  position: relative;
+  color: var(--text-secondary);
+  border-color: var(--hairline);
+  background: var(--bg-card);
+}
+
+.mao-pattern-action-btn.is-apply:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: var(--theme-accent, #3b82f6);
+  background: color-mix(in srgb, var(--theme-accent, #3b82f6) 12%, transparent);
+}
+
+/* 当画布有未应用修改时：突出高亮主色状态，坚决使用深纯色底配合纯白字，防止白底白字 */
+.mao-pattern-action-btn.is-apply.has-changes {
+  color: #ffffff !important;
+  background: var(--theme-accent, #3b82f6) !important;
+  border-color: var(--theme-accent, #3b82f6) !important;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--theme-accent, #3b82f6) 45%, transparent);
+  font-weight: 600;
+}
+
+.mao-pattern-action-btn.is-apply.has-changes:hover:not(:disabled) {
+  color: #ffffff !important;
+  background: color-mix(in srgb, var(--theme-accent, #3b82f6) 82%, #000000) !important;
+  border-color: color-mix(in srgb, var(--theme-accent, #3b82f6) 82%, #000000) !important;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--theme-accent, #3b82f6) 65%, transparent);
+  filter: none !important;
+}
+
+
+
+.mao-pattern-canvas {
+  display: grid;
+  grid-template-columns: repeat(20, minmax(0, 1fr));
+  gap: 3.5px;
+  padding: 6px;
+  background: rgba(0, 0, 0, 0.025);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  user-select: none;
+  touch-action: none;
+}
+
+:root[data-appearance="dark"] .mao-pattern-canvas {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.mao-pattern-cell {
+  aspect-ratio: 1 / 1;
+  border-radius: 2px;
+  padding: 0;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: background-color 100ms ease, transform 100ms ease, box-shadow 100ms ease;
+}
+
+:root[data-appearance="dark"] .mao-pattern-cell:not(.is-lit) {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.mao-pattern-cell:hover {
+  transform: scale(1.12);
+  z-index: 2;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+:root[data-appearance="dark"] .mao-pattern-cell:not(.is-lit):hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 点亮状态：统一由设计令牌驱动，与首页热力矩阵完全一致 */
+.mao-pattern-cell.is-lit {
+  background: var(--matrix-boot-pixel-bg) !important;
+  border: 1px solid var(--matrix-boot-pixel-border) !important;
+  box-shadow: var(--matrix-boot-pixel-shadow) !important;
+}
+
+/* 动效预览横扫光束：纯光效平滑扫掠，无尺寸抽搐 */
+.mao-pattern-cell.is-scan-beam {
+  background: var(--matrix-boot-pixel-bg) !important;
+  border-color: var(--matrix-boot-pixel-border) !important;
+  box-shadow: 0 0 10px var(--matrix-boot-beam-glow), 0 0 3px var(--matrix-boot-pixel-border) !important;
+  transform: none;
+  z-index: 5;
+}
+
+:root[data-appearance="dark"] .mao-pattern-cell.is-scan-beam {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.95), 0 0 4px var(--matrix-boot-beam-glow) !important;
+}
+
+.mao-pattern-cell.is-unlit {
+  opacity: 0.25;
+  transition: background-color 0.16s ease-out, opacity 0.16s ease-out, box-shadow 0.16s ease-out;
+}
+
+.mao-pattern-cell.is-preview-pulse {
+  animation: var(--matrix-boot-pulse-anim) 0.6s ease-in-out infinite;
+}
+
+.mao-preset-chip {
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--hairline);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 120ms ease;
+  user-select: none;
+}
+
+.mao-preset-chip:hover {
+  color: var(--text-primary);
+  border-color: var(--theme-accent, #3b82f6);
+}
+
+.mao-preset-chip.is-active {
+  background: color-mix(in srgb, var(--theme-accent, #3b82f6) 12%, transparent);
+  border-color: color-mix(in srgb, var(--theme-accent, #3b82f6) 40%, transparent);
+  color: var(--theme-accent, #3b82f6);
+  font-weight: 600;
+}
+
+.mao-preset-chip.is-add {
+  border-style: dashed;
+  color: var(--accent-500, #f59e0b);
+  border-color: color-mix(in srgb, var(--accent-500, #f59e0b) 45%, transparent);
+  background: color-mix(in srgb, var(--accent-500, #f59e0b) 6%, transparent);
+}
+
+.mao-preset-chip.is-add:hover {
+  color: var(--accent-500, #f59e0b);
+  border-color: var(--accent-500, #f59e0b);
+  background: color-mix(in srgb, var(--accent-500, #f59e0b) 14%, transparent);
+}
